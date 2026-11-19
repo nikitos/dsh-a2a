@@ -76,8 +76,8 @@
   },
   "scripts": {
     "build": "tsc -b tsconfig.json && tsc -p tsconfig.client.json && tsdown && node scripts/build-client.mjs",
-    "prepare": "node scripts/ensure-lib.mjs",
-    "prepack": "node scripts/ensure-lib.mjs",
+    "prepare": "node -e \"const{existsSync}=require('fs');if(!existsSync('lib/index.js')||!existsSync('lib/client.js')){console.error('dist branch: committed lib/ missing');process.exit(1)}\"",
+    "prepack": "echo en-hard-dist: prebuilt lib committed, no build",
     "typecheck": "tsc -b tsconfig.json && tsc -p tsconfig.client.json && tsc -p tsconfig.types.json",
     "test": "vitest run",
     "test:integration": "vitest run tests/integration",
