@@ -30,12 +30,12 @@ export type UpdateTone = 'pending' | 'update' | 'ok' | 'unknown'
 
 /** Human-readable status; a failed lookup never reads as "up to date". */
 export function updateStatusText(update: UpdateInfo | undefined, error: string | undefined): string {
-  if (error !== undefined) return `检查更新失败：${error}`
-  if (update === undefined) return '正在检查更新…'
-  if (update.hasUpdate) return `有新版本 v${update.latest ?? ''}`
-  if (!update.ok) return `暂时查不到最新版本（${update.error ?? '网络'}）—— 这不代表没有问题`
-  if (update.ahead) return `本地版本比已发布版本新（${update.latest ?? ''}）`
-  return `已是最新版（v${update.latest ?? ''}）`
+  if (error !== undefined) return `Update check failed: ${error}`
+  if (update === undefined) return 'Checking for updates…'
+  if (update.hasUpdate) return `New version v${update.latest ?? ''} available`
+  if (!update.ok) return `Cannot fetch the latest version right now (${update.error ?? 'network'}) — this does not mean everything is fine`
+  if (update.ahead) return `Local version is newer than the published one (${update.latest ?? ''})`
+  return `Up to date (v${update.latest ?? ''})`
 }
 
 /** Tone paired with {@link updateStatusText}. */

@@ -265,15 +265,15 @@ export function createUpdateChecker(options: UpdateCheckerOptions): UpdateChecke
   })
 
   async function lookup(): Promise<UpdateInfo> {
-    if (current === '') return unavailable('读不到插件版本（package.json 缺少 version）', now())
+    if (current === '') return unavailable('Cannot read plugin version (package.json has no version)', now())
     const errors: string[] = []
     const candidates: Array<{ readonly source: UpdateSource; readonly version: string }> = []
 
     const collect = async (source: UpdateSource, url: string, parse: (payload: unknown) => string | undefined): Promise<void> => {
       try {
         const version = parse(await fetchJson(url, fetchImpl, timeoutMs))
-        if (version === undefined) throw new Error('响应里没有 version')
-        if (parseVersion(version) === null) throw new Error(`版本号无法解析：${version}`)
+        if (version === undefined) throw new Error('Response has no version')
+        if (parseVersion(version) === null) throw new Error(`Cannot parse version: ${version}`)
         candidates.push({ source, version })
       } catch (err) {
         errors.push(`${source}: ${err instanceof Error ? err.message : String(err)}`)
@@ -293,7 +293,7 @@ export function createUpdateChecker(options: UpdateCheckerOptions): UpdateChecke
 
     const checkedAt = now()
     if (latest === undefined) {
-      return unavailable(errors.length > 0 ? errors.join('; ') : '没有可用的更新源', checkedAt)
+      return unavailable(errors.length > 0 ? errors.join('; ') : 'No update source available', checkedAt)
     }
     const comparison = compareVersions(latest.version, current)
     return {

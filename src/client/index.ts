@@ -1,7 +1,7 @@
 /**
  * A2A settings dashboard — browser half.
  *
- * Registers one `settings.section` ("A2A 连接") managing the multi-instance
+ * Registers one `settings.section` ("A2A Connections") managing the multi-instance
  * A2A composition across three tabs: inbound server instances (create/edit,
  * each with its own agent preset — skills derive automatically — and an
  * optional bearer token), outbound server connections (two-phase
@@ -37,7 +37,7 @@ export function apply(ctx: ClientContext): void {
       name: 'settings.section',
       id: 'a2a',
       order: 90,
-      label: () => 'A2A 连接',
+      label: () => 'A2A Connections',
       inject: () => ({}),
     },
     A2aSection,
@@ -557,12 +557,12 @@ export function A2aSection(_props: SectionProps): ReactElement {
   const updateCommand = updateCommandFor(profile)
   const copyUpdateCommand = (): void => {
     if (navigator.clipboard === undefined) {
-      setNotice('复制不了，请手动选中命令')
+      setNotice('Copy failed, select the command manually')
       return
     }
     navigator.clipboard.writeText(updateCommand)
-      .then(() => setNotice('更新命令已复制'))
-      .catch(() => setNotice('复制不了，请手动选中命令'))
+      .then(() => setNotice('Update command copied'))
+      .catch(() => setNotice('Copy failed, select the command manually'))
   }
 
   return createElement(
@@ -571,7 +571,7 @@ export function A2aSection(_props: SectionProps): ReactElement {
     createElement(
       'div',
       { className: 'dsh-a2a-section' },
-      createElement('p', { className: 'dsh-a2a-intro' }, '管理本 DSH 的 A2A 连接：入站 server 把 DSH 作为 Agent 发布（每个绑定一个 agent preset，技能自动派生）；出站 server 连接并调用远程 A2A Agent。'),
+      createElement('p', { className: 'dsh-a2a-intro' }, 'Manage A2A connections of this DSH: inbound servers publish DSH as an Agent (each bound to one agent preset, skills derive automatically); outbound servers connect to and call remote A2A Agents.'),
       // ── version / update strip ───────────────────────────────────────
       createElement('div', { className: 'dsh-a2a-verbar' },
         createElement('div', { className: 'dsh-a2a-verbar-main' },
@@ -583,37 +583,37 @@ export function A2aSection(_props: SectionProps): ReactElement {
           runtime !== undefined
             ? createElement('span', { className: 'dsh-a2a-verbar-runtime' }, `Node ${runtime.node} · ${runtime.platform}/${runtime.arch}`)
             : null,
-          createElement('button', { className: 'dsh-a2a-btn', type: 'button', disabled: updateBusy, onClick: () => { void checkUpdate() } }, updateBusy ? '检查中…' : '检查更新'),
+          createElement('button', { className: 'dsh-a2a-btn', type: 'button', disabled: updateBusy, onClick: () => { void checkUpdate() } }, updateBusy ? 'Checking…' : 'Check for updates'),
         ),
       ),
       update !== undefined && update.hasUpdate
         ? createElement('div', { className: 'dsh-a2a-update-detail' },
-            createElement('div', { className: 'dsh-a2a-hint' }, `发现新版本 v${update.latest ?? ''}（当前 v${update.current}，来源 ${update.source ?? '未知'}）。先卸旧版再装新版；直接安装可能拿到缓存里的旧副本。命令使用当前 profile（${profile}），装完重启一次 DSH。`),
+            createElement('div', { className: 'dsh-a2a-hint' }, `New version v${update.latest ?? ''} found (current v${update.current}, source ${update.source ?? 'unknown'}). Uninstall the old version before installing the new one; installing directly may pull a stale cached copy. The command uses the current profile (${profile}); restart DSH once after install.`),
             createElement('pre', { className: 'dsh-a2a-command dsh-a2a-mono' }, updateCommand),
             createElement('div', { className: 'dsh-a2a-btn-row' },
-              createElement('button', { className: 'dsh-a2a-btn', type: 'button', onClick: copyUpdateCommand }, '复制命令'),
+              createElement('button', { className: 'dsh-a2a-btn', type: 'button', onClick: copyUpdateCommand }, 'Copy command'),
               update.repoUrl !== null
-                ? createElement('a', { className: 'dsh-a2a-link', href: update.repoUrl, target: '_blank', rel: 'noreferrer' }, '打开仓库')
+                ? createElement('a', { className: 'dsh-a2a-link', href: update.repoUrl, target: '_blank', rel: 'noreferrer' }, 'Open repository')
                 : null,
             ),
           )
         : null,
-      error !== undefined ? createElement('div', { className: 'dsh-a2a-notice dsh-a2a-error' }, `加载失败：${error}`) : null,
+      error !== undefined ? createElement('div', { className: 'dsh-a2a-notice dsh-a2a-error' }, `Load failed: ${error}`) : null,
       notice !== undefined ? createElement('div', { className: 'dsh-a2a-notice' }, notice) : null,
       // ── tabs ─────────────────────────────────────────────────────────
       createElement('div', { className: 'dsh-a2a-tabs' },
-        createElement('button', { className: 'dsh-a2a-tab', 'data-active': String(tab === 'inbound'), onClick: () => setTab('inbound') }, `入站 Servers（${inbounds.length}）`),
-        createElement('button', { className: 'dsh-a2a-tab', 'data-active': String(tab === 'outbound'), onClick: () => setTab('outbound') }, `出站 Servers（${outbounds.length}）`),
-        createElement('button', { className: 'dsh-a2a-tab', 'data-active': String(tab === 'activity'), onClick: () => setTab('activity') }, `连接与任务（${peers.length} 连接 · ${sessions.length} 会话）`),
+        createElement('button', { className: 'dsh-a2a-tab', 'data-active': String(tab === 'inbound'), onClick: () => setTab('inbound') }, `Inbound Servers (${inbounds.length})`),
+        createElement('button', { className: 'dsh-a2a-tab', 'data-active': String(tab === 'outbound'), onClick: () => setTab('outbound') }, `Outbound Servers (${outbounds.length})`),
+        createElement('button', { className: 'dsh-a2a-tab', 'data-active': String(tab === 'activity'), onClick: () => setTab('activity') }, `Connections & tasks (${peers.length} connections · ${sessions.length} sessions)`),
       ),
 
       // ══ tab: inbound servers ══════════════════════════════════════════
       tab === 'inbound'
         ? createElement('div', { className: 'dsh-a2a-stack' },
             createElement('div', { className: 'dsh-a2a-crew' },
-              h('入站 Servers', inbounds.length),
+              h('Inbound Servers', inbounds.length),
               inbounds.length === 0
-                ? empty('还没有入站 server。创建一个即可对外发布 A2A 端点。')
+                ? empty('No inbound servers yet. Create one to publish an A2A endpoint.')
                 : createElement('div', { className: 'dsh-a2a-card-list' },
                     ...inbounds.map((v) =>
                       createElement('div', { className: 'dsh-a2a-card', key: v.id },
@@ -623,52 +623,52 @@ export function A2aSection(_props: SectionProps): ReactElement {
                           createElement('span', { className: 'dsh-a2a-badge' }, presetLabel(presets, v.preset)),
                           createElement('span', { className: 'dsh-a2a-badge dsh-a2a-mono' }, `v${v.version}`),
                           ...(v.trace ? [createElement('span', { className: 'dsh-a2a-badge', key: 'trace' }, 'trace')] : []),
-                          createElement('span', { className: 'dsh-a2a-auth' }, v.authTokenEnv !== undefined ? '· 已配置鉴权' : '· 匿名'),
+                          createElement('span', { className: 'dsh-a2a-auth' }, v.authTokenEnv !== undefined ? '· auth configured' : '· anonymous'),
                         ),
                         createElement('div', { className: 'dsh-a2a-card-sub dsh-a2a-mono' }, `${v.endpointPath} · ${v.cardUrl ?? v.cardPath}`),
                         v.skills.length > 0
                           ? createElement('div', null, ...v.skills.map((s) => createElement('span', { className: 'dsh-a2a-skill', key: s.id, title: s.description ?? '' }, s.name)))
                           : null,
                         createElement('div', { className: 'dsh-a2a-btn-row' },
-                          createElement('button', { className: 'dsh-a2a-btn', disabled: busy, onClick: () => { void control({ action: v.enabled ? 'inbound.disable' : 'inbound.enable', id: v.id }) } }, v.enabled ? '停用' : '启用'),
+                          createElement('button', { className: 'dsh-a2a-btn', disabled: busy, onClick: () => { void control({ action: v.enabled ? 'inbound.disable' : 'inbound.enable', id: v.id }) } }, v.enabled ? 'Disable' : 'Enable'),
                           createElement('button', { className: 'dsh-a2a-btn', disabled: busy, onClick: () => { void openCard(v.id) } }, 'Card'),
-                          createElement('button', { className: 'dsh-a2a-btn', disabled: busy, onClick: () => { setTestInbound(v.id); setTestSkill(v.skills[0]?.id ?? 'chat'); setTestResult(undefined) } }, '测试'),
-                          createElement('button', { className: 'dsh-a2a-btn', disabled: busy, onClick: () => beginEditInbound(v) }, '编辑'),
-                          createElement('button', { className: 'dsh-a2a-btn', disabled: busy, onClick: () => { void control({ action: 'inbound.remove', id: v.id }); if (editingIn === v.id) beginCreateInbound() } }, '删除'),
+                          createElement('button', { className: 'dsh-a2a-btn', disabled: busy, onClick: () => { setTestInbound(v.id); setTestSkill(v.skills[0]?.id ?? 'chat'); setTestResult(undefined) } }, 'Test'),
+                          createElement('button', { className: 'dsh-a2a-btn', disabled: busy, onClick: () => beginEditInbound(v) }, 'Edit'),
+                          createElement('button', { className: 'dsh-a2a-btn', disabled: busy, onClick: () => { void control({ action: 'inbound.remove', id: v.id }); if (editingIn === v.id) beginCreateInbound() } }, 'Delete'),
                         ),
                       ),
                     ),
                   ),
             ),
             createElement('div', { className: 'dsh-a2a-card' },
-              h(editingIn !== null ? '编辑入站 Server' : '新建入站 Server'),
+              h(editingIn !== null ? 'Edit Inbound Server' : 'New Inbound Server'),
               createElement('form', { className: 'dsh-a2a-form', onSubmit: (ev: { preventDefault(): void }) => { ev.preventDefault(); void submitInbound() } },
-                createElement('input', { className: 'dsh-a2a-input', value: inName, placeholder: '名称', onChange: (e: { target: { value: string } }) => setInName(e.target.value) }),
-                createElement('input', { className: 'dsh-a2a-input', value: inVersion, placeholder: '版本', style: { width: '76px' }, onChange: (e: { target: { value: string } }) => setInVersion(e.target.value) }),
+                createElement('input', { className: 'dsh-a2a-input', value: inName, placeholder: 'Name', onChange: (e: { target: { value: string } }) => setInName(e.target.value) }),
+                createElement('input', { className: 'dsh-a2a-input', value: inVersion, placeholder: 'Version', style: { width: '76px' }, onChange: (e: { target: { value: string } }) => setInVersion(e.target.value) }),
                 createElement('select', { className: 'dsh-a2a-select', value: inPreset, onChange: (e: { target: { value: string } }) => setInPreset(e.target.value) },
                   ...presets.map((p) => createElement('option', { value: p.id, key: p.id, title: p.description ?? p.id }, p.name ?? p.id)),
                 ),
-                createElement('input', { className: 'dsh-a2a-input', type: 'password', value: inToken, placeholder: editingIn !== null ? 'Bearer Token（留空不改，填写则更新）' : 'Bearer Token（可选）', onChange: (e: { target: { value: string } }) => setInToken(e.target.value) }),
+                createElement('input', { className: 'dsh-a2a-input', type: 'password', value: inToken, placeholder: editingIn !== null ? 'Bearer Token (leave empty to keep, type to update)' : 'Bearer Token (optional)', onChange: (e: { target: { value: string } }) => setInToken(e.target.value) }),
                 createElement('label', { className: 'dsh-a2a-hint' },
                   createElement('input', { type: 'checkbox', checked: inTrace, onChange: (e: { target: { checked: boolean } }) => setInTrace(e.target.checked) }),
-                  ' 允许 trace 扩展（工具名/脱敏摘要，默认关闭）',
+                  '  Allow trace extension (tool names/redacted summaries, off by default)',
                 ),
-                createElement('button', { className: 'dsh-a2a-btn dsh-a2a-btn-primary', type: 'submit', disabled: busy || !inName.trim() }, editingIn !== null ? '保存修改' : '创建 Server'),
-                editingIn !== null ? createElement('button', { className: 'dsh-a2a-btn', type: 'button', disabled: busy, onClick: () => beginCreateInbound() }, '取消') : null,
+                createElement('button', { className: 'dsh-a2a-btn dsh-a2a-btn-primary', type: 'submit', disabled: busy || !inName.trim() }, editingIn !== null ? 'Save changes' : 'Create Server'),
+                editingIn !== null ? createElement('button', { className: 'dsh-a2a-btn', type: 'button', disabled: busy, onClick: () => beginCreateInbound() }, 'Cancel') : null,
               ),
               editingIn !== null && (snap?.inbounds.find((x) => x.id === editingIn)?.authTokenEnv) !== undefined
                 ? createElement('div', { className: 'dsh-a2a-form' },
-                    createElement('label', { className: 'dsh-a2a-hint' }, '已配置鉴权。'),
-                    createElement('button', { className: 'dsh-a2a-btn', type: 'button', disabled: busy, onClick: () => { setInClearAuth(true); void submitInbound() } }, '清除鉴权'),
+                    createElement('label', { className: 'dsh-a2a-hint' }, 'Auth is configured.'),
+                    createElement('button', { className: 'dsh-a2a-btn', type: 'button', disabled: busy, onClick: () => { setInClearAuth(true); void submitInbound() } }, 'Clear auth'),
                   )
                 : null,
               createElement('div', { className: 'dsh-a2a-form' },
-                createElement('input', { className: 'dsh-a2a-input', value: inDesc, placeholder: '描述', style: { flex: 1, minWidth: '220px' }, onChange: (e: { target: { value: string } }) => setInDesc(e.target.value) }),
+                createElement('input', { className: 'dsh-a2a-input', value: inDesc, placeholder: 'Description', style: { flex: 1, minWidth: '220px' }, onChange: (e: { target: { value: string } }) => setInDesc(e.target.value) }),
               ),
-              createElement('div', { className: 'dsh-a2a-hint' }, '技能由所绑 preset 自动派生（一切皆插件）；Bearer Token 可留空（匿名）。'),
+              createElement('div', { className: 'dsh-a2a-hint' }, 'Skills derive automatically from the bound preset (everything is a plugin); Bearer Token can stay empty (anonymous).'),
             ),
             createElement('div', { className: 'dsh-a2a-card' },
-              h('内置测试控制台', undefined),
+              h('Built-in test console', undefined),
               createElement('div', { className: 'dsh-a2a-form' },
                 createElement('select', {
                   className: 'dsh-a2a-select',
@@ -680,9 +680,9 @@ export function A2aSection(_props: SectionProps): ReactElement {
                   },
                 }, ...inbounds.map((v) => createElement('option', { value: v.id, key: v.id }, v.name))),
                 createElement('input', { className: 'dsh-a2a-input', value: testSkill, placeholder: 'skill', style: { width: '120px' }, onChange: (e: { target: { value: string } }) => setTestSkill(e.target.value) }),
-                createElement('input', { className: 'dsh-a2a-input', value: testContext, placeholder: 'contextId（可选）', style: { width: '180px' }, onChange: (e: { target: { value: string } }) => setTestContext(e.target.value) }),
-                createElement('input', { className: 'dsh-a2a-input', value: testText, placeholder: '发送一条测试消息', style: { flex: 1, minWidth: '220px' }, onChange: (e: { target: { value: string } }) => setTestText(e.target.value) }),
-                createElement('button', { className: 'dsh-a2a-btn dsh-a2a-btn-primary', type: 'button', disabled: busy || testInbound === '' || testText.trim() === '', onClick: () => { void submitTest() } }, '发送'),
+                createElement('input', { className: 'dsh-a2a-input', value: testContext, placeholder: 'contextId (optional)', style: { width: '180px' }, onChange: (e: { target: { value: string } }) => setTestContext(e.target.value) }),
+                createElement('input', { className: 'dsh-a2a-input', value: testText, placeholder: 'Send a test message', style: { flex: 1, minWidth: '220px' }, onChange: (e: { target: { value: string } }) => setTestText(e.target.value) }),
+                createElement('button', { className: 'dsh-a2a-btn dsh-a2a-btn-primary', type: 'button', disabled: busy || testInbound === '' || testText.trim() === '', onClick: () => { void submitTest() } }, 'Send'),
               ),
               testResult !== undefined
                 ? createElement('pre', { className: 'dsh-a2a-detail' }, JSON.stringify(testResult, null, 2))
@@ -693,7 +693,7 @@ export function A2aSection(_props: SectionProps): ReactElement {
                   h('AgentCard JSON'),
                   createElement('pre', { className: 'dsh-a2a-detail' }, JSON.stringify(cardView, null, 2)),
                   createElement('div', { className: 'dsh-a2a-btn-row' },
-                    createElement('button', { className: 'dsh-a2a-btn', type: 'button', onClick: () => setCardView(undefined) }, '关闭'),
+                    createElement('button', { className: 'dsh-a2a-btn', type: 'button', onClick: () => setCardView(undefined) }, 'Close'),
                   ),
                 )
               : null,
@@ -704,9 +704,9 @@ export function A2aSection(_props: SectionProps): ReactElement {
       tab === 'outbound'
         ? createElement('div', { className: 'dsh-a2a-stack' },
             createElement('div', { className: 'dsh-a2a-crew' },
-              h('出站 Servers', outbounds.length),
+              h('Outbound Servers', outbounds.length),
               outbounds.length === 0
-                ? empty('还没有出站 server。添加一个远端 A2A 连接即可把其技能注册为模型工具。')
+                ? empty('No outbound servers yet. Add a remote A2A connection to register its skills as model tools.')
                 : createElement('div', { className: 'dsh-a2a-card-list' },
                     ...outbounds.map((v) =>
                       createElement('div', { className: 'dsh-a2a-card', key: v.id },
@@ -717,33 +717,33 @@ export function A2aSection(_props: SectionProps): ReactElement {
                           v.agentVersion !== undefined
                             ? createElement('span', { className: 'dsh-a2a-badge dsh-a2a-mono' }, `v${v.agentVersion}`)
                             : null,
-                          createElement('span', { className: 'dsh-a2a-auth' }, `· ${v.state} · 工具 ${v.toolCount}/${v.skillCount}`),
+                          createElement('span', { className: 'dsh-a2a-auth' }, `· ${v.state} · tools ${v.toolCount}/${v.skillCount}`),
                         ),
                         createElement('div', { className: 'dsh-a2a-card-sub dsh-a2a-mono' }, v.agentCardUrl),
                         v.lastError !== undefined ? createElement('div', { className: 'dsh-a2a-notice dsh-a2a-error' }, v.lastError) : null,
                         createElement('div', { className: 'dsh-a2a-btn-row' },
-                          createElement('button', { className: 'dsh-a2a-btn', disabled: busy, onClick: () => { void control({ action: v.enabled ? 'outbound.disable' : 'outbound.enable', id: v.id }) } }, v.enabled ? '停用' : '启用'),
-                          createElement('button', { className: 'dsh-a2a-btn', disabled: busy, onClick: () => { void control({ action: 'outbound.refresh', id: v.id }) } }, '刷新'),
-                          createElement('button', { className: 'dsh-a2a-btn', disabled: busy, onClick: () => beginEditOutbound(v) }, '编辑'),
-                          createElement('button', { className: 'dsh-a2a-btn', disabled: busy, onClick: () => { void control({ action: 'outbound.remove', id: v.id }); if (editingOut === v.id) resetOutboundForm() } }, '删除'),
+                          createElement('button', { className: 'dsh-a2a-btn', disabled: busy, onClick: () => { void control({ action: v.enabled ? 'outbound.disable' : 'outbound.enable', id: v.id }) } }, v.enabled ? 'Disable' : 'Enable'),
+                          createElement('button', { className: 'dsh-a2a-btn', disabled: busy, onClick: () => { void control({ action: 'outbound.refresh', id: v.id }) } }, 'Refresh'),
+                          createElement('button', { className: 'dsh-a2a-btn', disabled: busy, onClick: () => beginEditOutbound(v) }, 'Edit'),
+                          createElement('button', { className: 'dsh-a2a-btn', disabled: busy, onClick: () => { void control({ action: 'outbound.remove', id: v.id }); if (editingOut === v.id) resetOutboundForm() } }, 'Delete'),
                         ),
                       ),
                     ),
                   ),
             ),
             createElement('div', { className: 'dsh-a2a-card' },
-              h(editingOut !== null ? '编辑出站 Server' : '添加出站 Server'),
+              h(editingOut !== null ? 'Edit Outbound Server' : 'Add Outbound Server'),
               createElement('form', { className: 'dsh-a2a-form', onSubmit: (ev: { preventDefault(): void }) => { ev.preventDefault(); void doDiscover() } },
-                createElement('input', { className: 'dsh-a2a-input', value: outName, placeholder: '名称', onChange: (e: { target: { value: string } }) => setOutName(e.target.value) }),
-                createElement('input', { className: 'dsh-a2a-input', value: outUrl, placeholder: '远端 AgentCard URL', style: { flex: 1, minWidth: '220px' }, onChange: (e: { target: { value: string } }) => { setOutUrl(e.target.value); setDiscovered(null) } }),
-                createElement('input', { className: 'dsh-a2a-input', type: 'password', value: outToken, placeholder: 'Bearer Token（可选）', onChange: (e: { target: { value: string } }) => setOutToken(e.target.value) }),
+                createElement('input', { className: 'dsh-a2a-input', value: outName, placeholder: 'Name', onChange: (e: { target: { value: string } }) => setOutName(e.target.value) }),
+                createElement('input', { className: 'dsh-a2a-input', value: outUrl, placeholder: 'Remote AgentCard URL', style: { flex: 1, minWidth: '220px' }, onChange: (e: { target: { value: string } }) => { setOutUrl(e.target.value); setDiscovered(null) } }),
+                createElement('input', { className: 'dsh-a2a-input', type: 'password', value: outToken, placeholder: 'Bearer Token (optional)', onChange: (e: { target: { value: string } }) => setOutToken(e.target.value) }),
                 createElement('select', { className: 'dsh-a2a-select', value: outPreset, onChange: (e: { target: { value: string } }) => setOutPreset(e.target.value) },
                   ...presets.map((p) => createElement('option', { value: p.id, key: p.id, title: p.description ?? p.id }, p.name ?? p.id)),
                 ),
-                createElement('input', { className: 'dsh-a2a-input', value: outTimeout, placeholder: '超时 ms', style: { width: '90px' }, onChange: (e: { target: { value: string } }) => setOutTimeout(e.target.value) }),
+                createElement('input', { className: 'dsh-a2a-input', value: outTimeout, placeholder: 'Timeout ms', style: { width: '90px' }, onChange: (e: { target: { value: string } }) => setOutTimeout(e.target.value) }),
                 editingOutbound !== undefined
                   ? createElement('div', { className: 'dsh-a2a-skill-list' },
-                      createElement('div', { className: 'dsh-a2a-skill-list-title' }, '技能（勾选启用）'),
+                      createElement('div', { className: 'dsh-a2a-skill-list-title' }, 'Skills (check to enable)'),
                       ...editingOutbound.skills.map((skill) => createElement('label', { key: skill.id, className: 'dsh-a2a-skill-toggle' },
                         createElement('input', {
                           type: 'checkbox',
@@ -755,17 +755,17 @@ export function A2aSection(_props: SectionProps): ReactElement {
                       createElement('input', {
                         className: 'dsh-a2a-input',
                         value: outSkillOverrides,
-                        placeholder: 'per-skill 覆盖 JSON，如 {"chat":{"description":"..."}}',
+                        placeholder: 'per-skill override JSON, e.g. {"chat":{"description":"..."}}',
                         onChange: (e: { target: { value: string } }) => setOutSkillOverrides(e.target.value),
                       }),
                     )
                   : null,
                 editingOut === null
-                  ? createElement('button', { className: 'dsh-a2a-btn', type: 'submit', disabled: busy || discovering || !outUrl.trim() }, discovering ? '读取中…' : '导入')
+                  ? createElement('button', { className: 'dsh-a2a-btn', type: 'submit', disabled: busy || discovering || !outUrl.trim() }, discovering ? 'Reading…' : 'Import')
                   : null,
                 createElement('button', { className: 'dsh-a2a-btn dsh-a2a-btn-primary', type: 'button', disabled: busy || (editingOut === null && discovered === null) || !outName.trim() || !outUrl.trim(), onClick: () => { void submitOutbound() } },
-                  editingOut !== null ? '保存修改' : '连接'),
-                editingOut !== null ? createElement('button', { className: 'dsh-a2a-btn', type: 'button', disabled: busy, onClick: () => resetOutboundForm() }, '取消') : null,
+                  editingOut !== null ? 'Save changes' : 'Connect'),
+                editingOut !== null ? createElement('button', { className: 'dsh-a2a-btn', type: 'button', disabled: busy, onClick: () => resetOutboundForm() }, 'Cancel') : null,
               ),
               discovered !== null
                 ? createElement('div', { className: 'dsh-a2a-preview' },
@@ -777,17 +777,17 @@ export function A2aSection(_props: SectionProps): ReactElement {
                     discovered.description !== undefined ? createElement('div', { className: 'dsh-a2a-preview-desc' }, discovered.description) : null,
                     discovered.skills.length > 0
                       ? createElement('div', { className: 'dsh-a2a-skill-list' },
-                          createElement('div', { className: 'dsh-a2a-skill-list-title' }, `Skills（${discovered.skills.length}）`),
+                          createElement('div', { className: 'dsh-a2a-skill-list-title' }, `Skills (${discovered.skills.length})`),
                           ...discovered.skills.map((s) => createElement('div', { key: s.id }, `• ${s.name}${s.description !== undefined ? ` — ${s.description}` : ''}`)),
                         )
                       : null,
-                    createElement('div', { className: 'dsh-a2a-preview-meta dsh-a2a-mono' }, `端点 ${discovered.endpoint}`),
+                    createElement('div', { className: 'dsh-a2a-preview-meta dsh-a2a-mono' }, `Endpoint ${discovered.endpoint}`),
                     createElement('div', { className: 'dsh-a2a-btn-row' },
-                      createElement('button', { className: 'dsh-a2a-btn dsh-a2a-btn-primary', disabled: busy || !outName.trim(), onClick: () => { void submitOutbound() } }, '连接'),
-                      createElement('button', { className: 'dsh-a2a-btn', disabled: busy, onClick: () => { setDiscovered(null); setOutUrl('') } }, '取消'),
+                      createElement('button', { className: 'dsh-a2a-btn dsh-a2a-btn-primary', disabled: busy || !outName.trim(), onClick: () => { void submitOutbound() } }, 'Connect'),
+                      createElement('button', { className: 'dsh-a2a-btn', disabled: busy, onClick: () => { setDiscovered(null); setOutUrl('') } }, 'Cancel'),
                     ),
                   )
-                : createElement('div', { className: 'dsh-a2a-hint' }, editingOut === null ? '输入远端 AgentCard URL 并点击「导入」，将读取其名称、描述、技能与端点；确认后建立连接。' : '保存将应用名称/Preset/超时与 Token 修改，并重建连接。'),
+                : createElement('div', { className: 'dsh-a2a-hint' }, editingOut === null ? 'Enter a remote AgentCard URL and click "Import" to read its name, description, skills and endpoint; the connection is created after confirmation.' : 'Saving applies name/preset/timeout and token changes and rebuilds the connection.'),
             ),
           )
         : null,
@@ -796,23 +796,23 @@ export function A2aSection(_props: SectionProps): ReactElement {
       tab === 'activity'
         ? createElement('div', { className: 'dsh-a2a-stack' },
             createElement('div', { className: 'dsh-a2a-crew' },
-              h('指标'),
+              h('Metrics'),
               metrics !== undefined
                 ? createElement('div', { className: 'dsh-a2a-metrics' },
-                    createElement('span', null, `请求 ${metrics.requests} · 鉴权失败 ${metrics.authFailures}`),
-                    createElement('span', null, `任务 ${metrics.tasks.created}（完成 ${metrics.tasks.completed} / 失败 ${metrics.tasks.failed} / 取消 ${metrics.tasks.canceled} / 中断 ${metrics.tasks.interrupted}）`),
-                    createElement('span', null, `平均 ${metrics.tasks.avgDurationMs}ms · 最长 ${metrics.tasks.maxDurationMs}ms`),
-                    createElement('span', null, `出站 ${metrics.outbound.calls}（错误 ${metrics.outbound.errors}，平均 ${metrics.outbound.avgDurationMs}ms）`),
+                    createElement('span', null, `Requests ${metrics.requests} · auth failures ${metrics.authFailures}`),
+                    createElement('span', null, `Tasks ${metrics.tasks.created} (done ${metrics.tasks.completed} / failed ${metrics.tasks.failed} / canceled ${metrics.tasks.canceled} / interrupted ${metrics.tasks.interrupted})`),
+                    createElement('span', null, `avg ${metrics.tasks.avgDurationMs}ms · max ${metrics.tasks.maxDurationMs}ms`),
+                    createElement('span', null, `Outbound ${metrics.outbound.calls} (errors ${metrics.outbound.errors}, avg ${metrics.outbound.avgDurationMs}ms)`),
                   )
-                : empty('暂无指标。'),
+                : empty('No metrics yet.'),
               metrics !== undefined && metrics.audit.length > 0
                 ? createElement('div', { className: 'dsh-a2a-table-wrap' },
                     createElement('table', { className: 'dsh-a2a-table' },
                       createElement('thead', null, createElement('tr', null,
-                        createElement('th', null, '时间'),
-                        createElement('th', null, '事件'),
-                        createElement('th', null, '实例 / 任务'),
-                        createElement('th', null, '详情'),
+                        createElement('th', null, 'Time'),
+                        createElement('th', null, 'Event'),
+                        createElement('th', null, 'Instance / Task'),
+                        createElement('th', null, 'Details'),
                       )),
                       createElement('tbody', null,
                         ...metrics.audit.slice(-20).reverse().map((event, index) => createElement('tr', { key: `${event.at}-${index}` },
@@ -826,45 +826,45 @@ export function A2aSection(_props: SectionProps): ReactElement {
                   )
                 : null,
             ),
-            createElement('div', { className: 'dsh-a2a-crew' }, h('入站连接（谁在调用本服务）', peers.length),
+            createElement('div', { className: 'dsh-a2a-crew' }, h('Inbound connections (who calls this service)', peers.length),
               peers.length === 0
-                ? empty('暂无入站连接。其他 A2A 客户端调用本 DSH 的端点后会显示在这里。')
+                ? empty('No inbound connections yet. They appear here once other A2A clients call this DSH endpoint.')
                 : createElement('div', { className: 'dsh-a2a-table-wrap' },
                     createElement('table', { className: 'dsh-a2a-table' },
                       createElement('thead', null, createElement('tr', null,
-                        createElement('th', null, '来源'),
-                        createElement('th', null, '任务'),
-                        createElement('th', null, '流式'),
-                        createElement('th', null, '首次 / 最近'),
-                        createElement('th', null, '操作'),
+                        createElement('th', null, 'Source'),
+                        createElement('th', null, 'Task'),
+                        createElement('th', null, 'Streaming'),
+                        createElement('th', null, 'First / Last'),
+                        createElement('th', null, 'Actions'),
                       )),
                       createElement('tbody', null,
                         ...peers.map((p) => createElement('tr', { key: p.id },
                           createElement('td', null, p.source ?? p.label),
-                          createElement('td', null, `${p.taskCount}（活跃 ${p.activeTaskIds.length}）`),
+                          createElement('td', null, `${p.taskCount} (active ${p.activeTaskIds.length})`),
                           createElement('td', null, p.streaming ? '●' : '—'),
                           createElement('td', null, createElement('span', { className: 'dsh-a2a-card-sub' }, `${p.firstSeen ?? ''} / ${p.lastSeen ?? ''}`)),
-                          createElement('td', null, createElement('button', { className: 'dsh-a2a-btn', disabled: busy, onClick: () => { void control({ action: 'inbound.close', id: p.id }) } }, '关闭')),
+                          createElement('td', null, createElement('button', { className: 'dsh-a2a-btn', disabled: busy, onClick: () => { void control({ action: 'inbound.close', id: p.id }) } }, 'Close')),
                         )),
                       ),
                     ),
                   ),
             ),
             createElement('div', { className: 'dsh-a2a-crew' },
-              h('入站会话（按 contextId）', sessions.length),
+              h('Inbound sessions (by contextId)', sessions.length),
               sessions.length === 0
-                ? empty('暂无会话。其他 A2A 客户端带 contextId 调用本服务后，这里会出现一条会话记录。')
+                ? empty('No sessions yet. When other A2A clients call this service with a contextId, a session row appears here.')
                 : createElement('div', { className: 'dsh-a2a-table-wrap' },
                     createElement('table', { className: 'dsh-a2a-table' },
                       createElement('thead', null, createElement('tr', null,
-                        createElement('th', null, '会话'),
-                        createElement('th', null, '实例'),
+                        createElement('th', null, 'Session'),
+                        createElement('th', null, 'Instance'),
                         createElement('th', null, 'Preset'),
-                        createElement('th', null, '状态'),
-                        createElement('th', null, '任务'),
-                        createElement('th', null, '流式'),
-                        createElement('th', null, '首次 / 最近'),
-                        createElement('th', null, '操作'),
+                        createElement('th', null, 'State'),
+                        createElement('th', null, 'Task'),
+                        createElement('th', null, 'Streaming'),
+                        createElement('th', null, 'First / Last'),
+                        createElement('th', null, 'Actions'),
                       )),
                       createElement('tbody', null,
                         ...sessions.map((s) => createElement('tr', { key: `${s.serverId ?? ''}/${s.contextId}` },
@@ -873,15 +873,15 @@ export function A2aSection(_props: SectionProps): ReactElement {
                           createElement('td', null, s.preset ?? '-'),
                           createElement('td', null,
                             createElement('span', { 'data-state': s.status === 'running' ? 'connected' : undefined, className: 'dsh-a2a-dot' }),
-                            ` ${s.status === 'running' ? '运行中' : '空闲'}`,
+                            ` ${s.status === 'running' ? 'running' : 'idle'}`,
                           ),
-                          createElement('td', null, `${s.taskCount}（活跃 ${s.activeCount}）`),
+                          createElement('td', null, `${s.taskCount} (active ${s.activeCount})`),
                           createElement('td', null, s.streaming ? '●' : '—'),
                           createElement('td', null, createElement('span', { className: 'dsh-a2a-card-sub' }, `${s.firstSeen} / ${s.lastSeen}`)),
                           createElement('td', null,
-                            createElement('button', { className: 'dsh-a2a-btn', disabled: busy || s.activeCount === 0, onClick: () => { void control({ action: 'session.cancel', id: s.contextId, ...(s.serverId !== undefined ? { serverId: s.serverId } : {}) }) } }, '取消活跃'),
-                            createElement('button', { className: 'dsh-a2a-btn', disabled: busy, onClick: () => { void openConversation(s.contextId, s.serverId) } }, '对话'),
-                            createElement('button', { className: 'dsh-a2a-btn', disabled: busy, onClick: () => { void control({ action: 'session.close', id: s.contextId, ...(s.serverId !== undefined ? { serverId: s.serverId } : {}) }) } }, '关闭'),
+                            createElement('button', { className: 'dsh-a2a-btn', disabled: busy || s.activeCount === 0, onClick: () => { void control({ action: 'session.cancel', id: s.contextId, ...(s.serverId !== undefined ? { serverId: s.serverId } : {}) }) } }, 'Cancel active'),
+                            createElement('button', { className: 'dsh-a2a-btn', disabled: busy, onClick: () => { void openConversation(s.contextId, s.serverId) } }, 'Conversation'),
+                            createElement('button', { className: 'dsh-a2a-btn', disabled: busy, onClick: () => { void control({ action: 'session.close', id: s.contextId, ...(s.serverId !== undefined ? { serverId: s.serverId } : {}) }) } }, 'Close'),
                           ),
                         )),
                       ),
@@ -890,19 +890,19 @@ export function A2aSection(_props: SectionProps): ReactElement {
             ),
             conversation !== undefined
               ? createElement('div', { className: 'dsh-a2a-crew' },
-                  h(`会话对话（${conversationKey}）`),
+                  h(`Session conversation (${conversationKey})`),
                   createElement('pre', { className: 'dsh-a2a-detail' }, JSON.stringify(conversation, null, 2)),
                 )
               : null,
             createElement('div', { className: 'dsh-a2a-crew' },
-              h('任务', tasks.length),
+              h('Task', tasks.length),
               createElement('div', { className: 'dsh-a2a-form' },
                 createElement('select', {
                   className: 'dsh-a2a-select',
                   value: taskFilter,
                   onChange: (e: { target: { value: string } }) => { setTaskFilter(e.target.value); setTaskLimit(50) },
                 },
-                  createElement('option', { value: '' }, '全部状态'),
+                  createElement('option', { value: '' }, 'All states'),
                   createElement('option', { value: 'TASK_STATE_WORKING' }, 'WORKING'),
                   createElement('option', { value: 'TASK_STATE_COMPLETED' }, 'COMPLETED'),
                   createElement('option', { value: 'TASK_STATE_FAILED' }, 'FAILED'),
@@ -910,21 +910,21 @@ export function A2aSection(_props: SectionProps): ReactElement {
                   createElement('option', { value: 'TASK_STATE_INPUT_REQUIRED' }, 'INPUT_REQUIRED'),
                   createElement('option', { value: 'TASK_STATE_AUTH_REQUIRED' }, 'AUTH_REQUIRED'),
                 ),
-                createElement('span', { className: 'dsh-a2a-hint' }, `共 ${snap?.taskTotal ?? tasks.length} 条，显示 ${tasks.length}`),
+                createElement('span', { className: 'dsh-a2a-hint' }, `${snap?.taskTotal ?? tasks.length} total, showing ${tasks.length}`),
                 snap?.taskNextOffset !== null && snap?.taskNextOffset !== undefined
-                  ? createElement('button', { className: 'dsh-a2a-btn', type: 'button', onClick: () => setTaskLimit((current) => current + 50) }, '加载更多')
+                  ? createElement('button', { className: 'dsh-a2a-btn', type: 'button', onClick: () => setTaskLimit((current) => current + 50) }, 'Load more')
                   : null,
               ),
               tasks.length === 0
-                ? empty('暂无任务。')
+                ? empty('No tasks yet.')
                 : createElement('div', { className: 'dsh-a2a-table-wrap' },
                     createElement('table', { className: 'dsh-a2a-table' },
                       createElement('thead', null, createElement('tr', null,
                         createElement('th', null, 'ID'),
-                        createElement('th', null, '技能'),
-                        createElement('th', null, '来源'),
-                        createElement('th', null, '状态'),
-                        createElement('th', null, '操作'),
+                        createElement('th', null, 'Skill'),
+                        createElement('th', null, 'Source'),
+                        createElement('th', null, 'State'),
+                        createElement('th', null, 'Actions'),
                       )),
                       createElement('tbody', null,
                         ...tasks.map((t) => createElement('tr', { key: t.id },
@@ -932,7 +932,7 @@ export function A2aSection(_props: SectionProps): ReactElement {
                           createElement('td', null, t.metadata?.skill ?? '-'),
                           createElement('td', null, t.metadata?.serverId ?? t.serverId ?? '-'),
                           createElement('td', null, t.status?.state ?? '-'),
-                          createElement('td', null, createElement('button', { className: 'dsh-a2a-btn', disabled: busy, onClick: () => { void control({ action: 'task.cancel', id: t.id }) } }, '取消')),
+                          createElement('td', null, createElement('button', { className: 'dsh-a2a-btn', disabled: busy, onClick: () => { void control({ action: 'task.cancel', id: t.id }) } }, 'Cancel')),
                         )),
                       ),
                     ),
@@ -944,7 +944,7 @@ export function A2aSection(_props: SectionProps): ReactElement {
           )
         : null,
 
-      createElement('div', { className: 'dsh-a2a-footer' }, '每 3 秒自动刷新。'),
+      createElement('div', { className: 'dsh-a2a-footer' }, 'Auto-refresh every 3 seconds.'),
     ),
   )
 }
